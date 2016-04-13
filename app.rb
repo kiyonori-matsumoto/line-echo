@@ -24,7 +24,7 @@ class App < Sinatra::Base
       return_string = "今のステージは#{stage_json["result"][0]["maps"][0]}と#{stage_json["result"][0]["maps"][1]}だよ!"
 
       endpoint_uri = 'https://trialbot-api.line.me/v1/events'
-      rerquest_content[:content] = return_string
+      request_content[:content] = return_string
       content_json = request_content.to_json
 
       RestClient.proxy = ENV['FIXIE_URL'] if ENV['FIXIE_URL']
