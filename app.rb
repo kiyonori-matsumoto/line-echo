@@ -7,6 +7,12 @@ require 'open-uri'
 
 class App < Sinatra::Base
   post '/linebot/callback' do
+    stage_json = nil
+    open("http://splapi.retrorocket.biz/gachi/now") do |fp|
+      stage_json = JSON.load(fp)
+    end
+    return_string = "今のステージは#{stage_json["result"][0]["maps"][0]}と#{stage_json["result"][0]["maps"][1]}だよ!"
+
     params = JSON.parse(request.body.read)
 
     params['result'].each do |msg|
@@ -17,14 +23,8 @@ class App < Sinatra::Base
         content: msg['content']
       }
 
-      stage_json = nil
-      open("http://splapi.retrorocket.biz/gachi/now") do |fp|
-        stage_json = JSON.load(fp)
-      end
-      return_string = "今のステージは#{stage_json["result"][0]["maps"][0]}と#{stage_json["result"][0]["maps"][1]}だよ!"
-
       endpoint_uri = 'https://trialbot-api.line.me/v1/events'
-      request_content[:content] = return_string
+      request_content[:content]['text'] = return_string
       content_json = request_content.to_json
 
       RestClient.proxy = ENV['FIXIE_URL'] if ENV['FIXIE_URL']
